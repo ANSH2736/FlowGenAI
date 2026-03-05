@@ -17,7 +17,7 @@ if groq_api_key:
 
     # Initialize Groq model (stable model)
     llm = ChatGroq(
-        model="llama3-8b-8192",
+        model="llama-3.1-8b-instant",
         groq_api_key=groq_api_key
     )
 
