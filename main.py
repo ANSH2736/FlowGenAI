@@ -17,7 +17,7 @@ st.sidebar.header("🔑 API Configuration")
 groq_api_key = st.sidebar.text_input("Enter Groq API Key:", type="password")
 
 if groq_api_key:
-    llm = ChatGroq(model="gemma2-9b-it", groq_api_key=groq_api_key)
+    llm = ChatGroq(model="gemma2-9b-It", groq_api_key=groq_api_key)
     
     # User input for task description
     st.subheader("📝 Describe Your Task")
