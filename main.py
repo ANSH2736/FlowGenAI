@@ -2,85 +2,71 @@ import streamlit as st
 from langchain_groq import ChatGroq
 from langchain_core.messages import SystemMessage, HumanMessage
 
-
-# Set up Streamlit UI
+# Streamlit page config
 st.set_page_config(page_title="FlowGen AI", page_icon="📈")
+
 st.title("FlowGen AI 🤖📈")
-st.markdown("""
-    ### Queries to Actionable Steps—Effortlessly! 🚀
-""")
+st.markdown("### Queries to Actionable Steps—Effortlessly! 🚀")
 st.divider()
 
-
-# Groq API Key Input
+# Sidebar API key input
 st.sidebar.header("🔑 API Configuration")
 groq_api_key = st.sidebar.text_input("Enter Groq API Key:", type="password")
 
 if groq_api_key:
-    llm = ChatGroq(model="gemma2-9b-It", groq_api_key=groq_api_key)
-    
-    # User input for task description
+
+    # Initialize Groq model (stable model)
+    llm = ChatGroq(
+        model="llama3-8b-8192",
+        groq_api_key=groq_api_key
+    )
+
+    # User input
     st.subheader("📝 Describe Your Task")
     user_query = st.text_area("What technical task do you want to execute?")
-    
+
     if st.button("🚀 Generate Execution Steps"):
+
         if user_query:
-            # Define system instructions
+
             system_prompt = """
-                            📌 Objective:
-                You are an AI assistant that specializes in breaking down complex technical tasks into structured execution steps. When a user provides a query, you should:
+📌 Objective:
+You are an AI assistant that specializes in breaking down complex technical tasks into structured execution steps.
 
-                Understand the task and identify key components.
-                Break it into a structured step-by-step process.
-                Generate a workflow diagram to visually represent the process.
-                Provide function calls and working code to implement the solution.
-                Output everything in Markdown format for better readability.
-                🔹 Workflow for Generating the Response
-                Task Analysis:
+Instructions:
+1. Understand the user task.
+2. Break it into clear numbered steps.
+3. Generate a workflow diagram.
+4. Provide working Python code.
+5. Format everything in clean Markdown.
 
-                Identify the core objective of the user query.
-                Extract relevant technologies, libraries, and methods involved.
-                Determine the input, processing steps, and expected output.
-                Break Down Steps into a Structured Process:
+Output format:
+### Task Breakdown
+Step-by-step execution plan.
 
-                Clearly define each execution step in a numbered list.
-                Describe the purpose of each step and the logic behind it.
-                Mention relevant function calls and libraries required for implementation.
-                Generate a Workflow Diagram:
+### Workflow Diagram
+ASCII or Mermaid diagram.
 
-                Convert the step-by-step process into a structured diagram.
-                Use standard workflow symbols (e.g., Start, Process, Decision, End).
-                Show dependencies between steps using arrows.
-                Provide Code Implementation:
+### Code Implementation
+Provide clean Python code with comments.
+"""
 
-                Generate Python (or other relevant) code to accomplish the task.
-                Include function definitions, imports, and necessary configurations.
-                Ensure the code is well-commented and modular.
-                Output in Markdown Format:
-
-                Use headers (###), bullet points (-), and code blocks (```python) for clarity.
-                Present workflow diagrams using ASCII art, Mermaid.js, or any relevant tool.
-                Ensure readability and ease of use for developers.
-            """
-            
-            # Create messages
             messages = [
                 SystemMessage(content=system_prompt),
                 HumanMessage(content=f"Task: {user_query}")
             ]
-            
-            # Generate response
-            response = llm.invoke(messages)
-            execution_steps = response.content
-            
-            # Display results
-            st.subheader("📜 Execution Steps")
-            st.markdown("""
-            Below is the structured execution plan generated for your query:
-            """)
-            
-            # Display response in a styled markdown text area
-            st.markdown(execution_steps, unsafe_allow_html=True)
+
+            try:
+                response = llm.invoke(messages)
+                execution_steps = response.content
+
+                st.subheader("📜 Execution Steps")
+                st.markdown("Below is the structured execution plan generated for your query:")
+                st.markdown(execution_steps)
+
+            except Exception as e:
+                st.error(f"Error generating response: {e}")
+
         else:
             st.warning("⚠️ Please enter a task description before proceeding.")
 
